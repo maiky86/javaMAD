@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">MadDev</string>
+    <string name="blank_label"></string>
+    <string name="notes_list_title">My Notes</string>
+    <string name="title_text">Title</string>
+    <string name="description_text">Description</string>
+    <string name="menu_save">Save</string>
+    <string name="menu_delete">Delete</string>
+    <string name="menu_edit">Edit</string>
 </resources>

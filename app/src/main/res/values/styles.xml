@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="NoteItem" parent="Widget.AppCompat.TextView">
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="NoteItem.Title">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold|italic</item>
+    </style>
+
+    <style name="NoteItem.Description">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+</resources>
