@@ -12,11 +12,12 @@ public class NoteObj {
     private Integer id;
     private String title;
     private String description;
-    private NoteColor color = NoteColor.WHITE;
+    private NoteColor color;
 
-    public NoteObj(String title, String description) {
+    public NoteObj(String title, String description, NoteColor color) {
         this.title = title;
         this.description = description;
+        this.color = color;
     }
 
     public Integer getId() {

@@ -1,33 +1,21 @@
 package com.challenge.maddev.data.utils;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.challenge.maddev.R;
 
 public enum NoteColor {
-    WHITE(0),
-    RED(1),
-    GREEN(2),
-    YELLOW(3),
-    BLUE(4);
+    WHITE(R.color.white),
+    RED(R.color.red),
+    GREEN(R.color.green),
+    YELLOW(R.color.yellow),
+    BLUE(R.color.blue);
 
-    private int value;
-    private static Map map = new HashMap<>();
+    private int colorId;
 
     private NoteColor(int value) {
-        this.value = value;
+        this.colorId = value;
     }
 
-    static {
-        for (NoteColor pageType : NoteColor.values()) {
-            map.put(pageType.value, pageType);
-        }
-    }
-
-    public static NoteColor valueOf(int pageType) {
-        return (NoteColor) map.get(pageType);
-    }
-
-    public int getValue() {
-        return value;
+    public int getColorId() {
+        return colorId;
     }
 }

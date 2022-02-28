@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
@@ -47,5 +48,11 @@ class NoteViewHolder extends RecyclerView.ViewHolder {
     public void bindNote(NoteObj note) {
         binding.titleNoteItem.setText(note.getTitle());
         binding.descriptionNoteItem.setText(note.getDescription());
+        binding.noteListItemCard.setCardBackgroundColor(
+                ContextCompat.getColor(
+                        binding.getRoot().getContext(),
+                        note.getColor().getColorId()
+                )
+        );
     }
 }
