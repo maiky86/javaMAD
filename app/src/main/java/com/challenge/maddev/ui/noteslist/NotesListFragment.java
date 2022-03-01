@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +22,7 @@ import com.challenge.maddev.databinding.FragmentNotesListBinding;
 
 import java.util.List;
 
-public class NotesListFragment extends Fragment implements NotesLocalDataSourceCallback {
+public class NotesListFragment extends Fragment implements NotesLocalDataSourceCallback, NotesListAdapterDelegate {
 
     private FragmentNotesListBinding binding;
     private NotesListAdapter adapter;
@@ -48,7 +49,7 @@ public class NotesListFragment extends Fragment implements NotesLocalDataSourceC
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        adapter = new NotesListAdapter(new NotesDiffUtil());
+        adapter = new NotesListAdapter(new NotesDiffUtil(), this);
         binding.notesList.setAdapter(adapter);
 
         binding.addNoteFb.setOnClickListener(addButton -> {
@@ -60,6 +61,7 @@ public class NotesListFragment extends Fragment implements NotesLocalDataSourceC
         localDataSource.getAllNotes(this);
     }
 
+    // NotesLocalDataSourceCallback
     @Override
     public void onNotesRetrieved(List<NoteObj> notesList) {
         adapter.submitList(notesList);
@@ -68,5 +70,14 @@ public class NotesListFragment extends Fragment implements NotesLocalDataSourceC
     @Override
     public void onNoteByIdRetrieved(NoteObj note) {
         // Do not apply here
+    }
+
+    // NoteListAdapterDelegate
+    @Override
+    public void onNoteSelected(NoteObj note) {
+        NotesListFragmentDirections.ActionNotesListToNoteDetail action =
+                NotesListFragmentDirections.actionNotesListToNoteDetail();
+        action.setNoteId(note.getId());
+        NavHostFragment.findNavController(this).navigate(action);
     }
 }

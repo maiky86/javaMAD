@@ -35,6 +35,7 @@
         android:id="@+id/notes_detail"
         android:name="com.challenge.maddev.ui.note_detail.NoteDetailFragment"
         tools:layout="@layout/fragment_note_detail"
+        android:label="@string/blank_label"
         >
         <argument
             android:name="noteId"

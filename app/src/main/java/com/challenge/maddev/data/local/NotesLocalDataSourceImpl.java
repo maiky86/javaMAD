@@ -1,6 +1,8 @@
 package com.challenge.maddev.data.local;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.challenge.maddev.data.model.NoteObj;
 import com.challenge.maddev.data.utils.NoteColor;
@@ -34,7 +36,9 @@ public class NotesLocalDataSourceImpl implements NotesLocalDataSource {
     public void getAllNotes(NotesLocalDataSourceCallback callback) {
         new Thread(() -> {
             List<NoteObj> notesList = notesDAO.getNotes();
-            callback.onNotesRetrieved(notesList);
+            new Handler(Looper.getMainLooper()).post(() ->
+                callback.onNotesRetrieved(notesList)
+            );
         }).start();
     }
 
@@ -42,7 +46,9 @@ public class NotesLocalDataSourceImpl implements NotesLocalDataSource {
     public void getNoteWithColor(NoteColor color, NotesLocalDataSourceCallback callback) {
         new Thread(() -> {
             List<NoteObj> notesList = notesDAO.getNotesByColor(color);
-            callback.onNotesRetrieved(notesList);
+            new Handler(Looper.getMainLooper()).post(() ->
+                    callback.onNotesRetrieved(notesList)
+            );
         }).start();
     }
 
@@ -50,7 +56,9 @@ public class NotesLocalDataSourceImpl implements NotesLocalDataSource {
     public void getNoteWithId(Integer id, NotesLocalDataSourceCallback callback) {
         new Thread(() -> {
             NoteObj note = notesDAO.getNoteById(id);
-            callback.onNoteByIdRetrieved(note);
+            new Handler(Looper.getMainLooper()).post(() ->
+                    callback.onNoteByIdRetrieved(note)
+            );
         }).start();
     }
 }

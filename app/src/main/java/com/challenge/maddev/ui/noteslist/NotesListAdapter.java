@@ -14,8 +14,14 @@ import com.challenge.maddev.databinding.ItemNoteListBinding;
 
 public class NotesListAdapter extends ListAdapter<NoteObj, NoteViewHolder> {
 
-    protected NotesListAdapter(@NonNull DiffUtil.ItemCallback<NoteObj> diffCallback) {
+    private NotesListAdapterDelegate delegate;
+
+    protected NotesListAdapter(
+            @NonNull DiffUtil.ItemCallback<NoteObj> diffCallback,
+            NotesListAdapterDelegate adapterDelegate
+            ) {
         super(diffCallback);
+        this.delegate = adapterDelegate;
     }
 
     @NonNull
@@ -33,6 +39,11 @@ public class NotesListAdapter extends ListAdapter<NoteObj, NoteViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull NoteViewHolder holder, int position) {
         holder.bindNote(getItem(position));
+        holder.itemView.setOnClickListener(view ->
+                delegate.onNoteSelected(
+                        getItem(position)
+                )
+        );
     }
 }
 
