@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/filter_all"
+            android:title="@string/text_all"
+            android:checked="true"
+            />
+        <item
+            android:id="@+id/filter_white"
+            android:title="@string/text_white"
+            />
+        <item
+            android:id="@+id/filter_blue"
+            android:title="@string/text_blue"
+            />
+        <item
+            android:id="@+id/filter_green"
+            android:title="@string/text_green"
+            />
+        <item
+            android:id="@+id/filter_red"
+            android:title="@string/text_red"
+            />
+        <item
+            android:id="@+id/filter_yellow"
+            android:title="@string/text_yellow"
+            />
+    </group>
+</menu>
