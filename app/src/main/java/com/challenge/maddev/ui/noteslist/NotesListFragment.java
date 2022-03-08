@@ -17,20 +17,21 @@ import android.view.ViewGroup;
 
 import com.challenge.maddev.R;
 import com.challenge.maddev.data.local.NotesLocalDataSource;
-import com.challenge.maddev.data.local.NotesLocalDataSourceCallback;
 import com.challenge.maddev.data.local.NotesLocalDataSourceImpl;
 import com.challenge.maddev.data.model.NoteObj;
 import com.challenge.maddev.data.utils.NoteColor;
 import com.challenge.maddev.data.utils.NotesDiffUtil;
 import com.challenge.maddev.databinding.FragmentNotesListBinding;
+import com.challenge.maddev.repositories.NotesRepository;
+import com.challenge.maddev.repositories.NotesRepositoryImpl;
 
 import java.util.List;
 
-public class NotesListFragment extends Fragment implements NotesLocalDataSourceCallback, NotesListAdapterDelegate {
+public class NotesListFragment extends Fragment implements NotesListAdapterDelegate {
 
     private FragmentNotesListBinding binding;
     private NotesListAdapter adapter;
-    private NotesLocalDataSource localDataSource;
+    private NotesRepository notesRepository;
 
     public NotesListFragment() {
         // Required empty public constructor
@@ -44,7 +45,7 @@ public class NotesListFragment extends Fragment implements NotesLocalDataSourceC
 
         binding = FragmentNotesListBinding.inflate(inflater,container, false);
 
-        localDataSource = new NotesLocalDataSourceImpl(getContext());
+        notesRepository = new NotesRepositoryImpl(getContext());
 
         setHasOptionsMenu(true);
 
@@ -68,10 +69,17 @@ public class NotesListFragment extends Fragment implements NotesLocalDataSourceC
     }
 
     private void requestNotesByFilter(boolean allNotes, NoteColor filterColor) {
-        if (allNotes)
-            localDataSource.getAllNotes(this);
-        else
-            localDataSource.getNoteWithColor(filterColor, this);
+        if (allNotes) {
+            notesRepository.getAllNotes().observe(
+                    getViewLifecycleOwner(),
+                    this::onNotesRetrieved
+            );
+        }else {
+            notesRepository.getNoteWithColor(filterColor).observe(
+                    getViewLifecycleOwner(),
+                    this::onNotesRetrieved
+            );
+        }
     }
 
     @Override
@@ -111,25 +119,22 @@ public class NotesListFragment extends Fragment implements NotesLocalDataSourceC
         return true;
     }
 
-    // NotesLocalDataSourceCallback
-    @Override
     public void onNotesRetrieved(List<NoteObj> notesList) {
+        if (notesList == null)
+            return;
+
         adapter.submitList(
                 notesList,
-                () -> {
-                    binding.notesList.smoothScrollToPosition(0);
-                }
+                () -> binding.notesList.smoothScrollToPosition(0)
         );
-    }
-
-    @Override
-    public void onNoteByIdRetrieved(NoteObj note) {
-        // Do not apply here
     }
 
     // NoteListAdapterDelegate
     @Override
     public void onNoteSelected(NoteObj note) {
+        if (note == null)
+            return;
+
         NotesListFragmentDirections.ActionNotesListToNoteDetail action =
                 NotesListFragmentDirections.actionNotesListToNoteDetail();
         action.setNoteId(note.getId());

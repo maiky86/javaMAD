@@ -1,5 +1,6 @@
 package com.challenge.maddev.data.local;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -23,12 +24,12 @@ public abstract class NotesDAO {
     @Update
     public abstract void updateNote(NoteObj note);
 
-    @Query("select * from notes_table")
-    public abstract List<NoteObj> getNotes();
+    @Query("select * from notes_table order by id desc")
+    public abstract LiveData<List<NoteObj>> getNotes();
 
     @Query("select * from notes_table where color = :color")
-    public abstract List<NoteObj> getNotesByColor(NoteColor color);
+    public abstract LiveData<List<NoteObj>> getNotesByColor(NoteColor color);
 
     @Query("select * from notes_table where id = :id")
-    public abstract NoteObj getNoteById(Integer id);
+    public abstract LiveData<NoteObj> getNoteById(Integer id);
 }

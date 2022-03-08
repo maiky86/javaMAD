@@ -1,51 +1,51 @@
-package com.challenge.maddev.data.local;
+package com.challenge.maddev.repositories;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 
 import androidx.lifecycle.LiveData;
 
+import com.challenge.maddev.data.local.NotesLocalDataSource;
+import com.challenge.maddev.data.local.NotesLocalDataSourceImpl;
 import com.challenge.maddev.data.model.NoteObj;
 import com.challenge.maddev.data.utils.NoteColor;
 
 import java.util.List;
 
-public class NotesLocalDataSourceImpl implements NotesLocalDataSource {
+public class NotesRepositoryImpl implements NotesRepository {
 
-    private NotesDAO notesDAO;
+    private NotesLocalDataSource dataSource;
 
-    public NotesLocalDataSourceImpl(Context context) {
-        this.notesDAO = NotesRoomDatabase.getInstance(context).notesDAO();
+    public NotesRepositoryImpl(Context context) {
+        dataSource = new NotesLocalDataSourceImpl(context);
     }
 
     @Override
     public void addNote(NoteObj note) {
-        new Thread(() ->notesDAO.insertNote(note)).start();
+        dataSource.addNote(note);
     }
 
     @Override
     public void removeNote(NoteObj note) {
-        new Thread(() ->notesDAO.deleteNote(note)).start();
+        dataSource.removeNote(note);
     }
 
     @Override
     public void updateNote(NoteObj note) {
-        new Thread(() ->notesDAO.updateNote(note)).start();
+        dataSource.updateNote(note);
     }
 
     @Override
     public LiveData<List<NoteObj>> getAllNotes() {
-        return notesDAO.getNotes();
+        return dataSource.getAllNotes();
     }
 
     @Override
     public LiveData<List<NoteObj>> getNoteWithColor(NoteColor color) {
-        return notesDAO.getNotesByColor(color);
+        return dataSource.getNoteWithColor(color);
     }
 
     @Override
     public LiveData<NoteObj> getNoteWithId(Integer id) {
-        return notesDAO.getNoteById(id);
+        return dataSource.getNoteWithId(id);
     }
 }

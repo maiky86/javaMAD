@@ -1,4 +1,4 @@
-package com.challenge.maddev.data.local;
+package com.challenge.maddev.repositories;
 
 import androidx.lifecycle.LiveData;
 
@@ -7,7 +7,7 @@ import com.challenge.maddev.data.utils.NoteColor;
 
 import java.util.List;
 
-public interface NotesLocalDataSource {
+public interface NotesRepository {
 
     void addNote(NoteObj note);
 

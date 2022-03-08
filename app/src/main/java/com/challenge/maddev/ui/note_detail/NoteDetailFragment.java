@@ -5,9 +5,6 @@ import static android.content.Context.INPUT_METHOD_SERVICE;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,22 +18,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.navigation.Navigation;
 
 import com.challenge.maddev.R;
-import com.challenge.maddev.data.local.NotesLocalDataSource;
-import com.challenge.maddev.data.local.NotesLocalDataSourceCallback;
 import com.challenge.maddev.data.local.NotesLocalDataSourceImpl;
 import com.challenge.maddev.data.model.NoteObj;
 import com.challenge.maddev.data.utils.NoteColor;
 import com.challenge.maddev.databinding.FragmentNoteDetailBinding;
+import com.challenge.maddev.repositories.NotesRepository;
+import com.challenge.maddev.repositories.NotesRepositoryImpl;
 
-import java.util.List;
-
-public class NoteDetailFragment extends Fragment implements NotesLocalDataSourceCallback {
+public class NoteDetailFragment extends Fragment {
 
     private FragmentNoteDetailBinding binding;
-    private NotesLocalDataSource localDataSource;
+    private NotesRepository notesRepository;
     private NoteColor selectedColor = NoteColor.WHITE;
 
     private boolean mArgIsAdd = true;
@@ -70,7 +66,7 @@ public class NoteDetailFragment extends Fragment implements NotesLocalDataSource
                 false
         );
 
-        localDataSource = new NotesLocalDataSourceImpl(getContext());
+        notesRepository = new NotesRepositoryImpl(getContext());
 
         if (mArgIsAdd || mIsEditing) {
             binding.colorContainer.setVisibility(View.VISIBLE);
@@ -92,7 +88,10 @@ public class NoteDetailFragment extends Fragment implements NotesLocalDataSource
         binding.colorWhite.setOnClickListener(view1 -> colorSelected(NoteColor.WHITE));
 
         if (mArgNoteId != -1) {
-            localDataSource.getNoteWithId(mArgNoteId, this);
+            notesRepository.getNoteWithId(mArgNoteId).observe(
+                    getViewLifecycleOwner(),
+                    this::onNoteByIdRetrieved
+            );
         }
     }
 
@@ -127,8 +126,9 @@ public class NoteDetailFragment extends Fragment implements NotesLocalDataSource
     }
 
     private void deleteNote() {
+
         if (mCurrentNote != null) {
-            localDataSource.removeNote(mCurrentNote);
+            notesRepository.removeNote(mCurrentNote);
         }
 
         Navigation.findNavController(binding.getRoot()).navigateUp();
@@ -140,13 +140,13 @@ public class NoteDetailFragment extends Fragment implements NotesLocalDataSource
 
         if (mCurrentNote == null) {
             NoteObj note = new NoteObj(title, description, selectedColor);
-            localDataSource.addNote(note);
+            notesRepository.addNote(note);
             Navigation.findNavController(binding.getRoot()).navigateUp();
         } else {
             mCurrentNote.setTitle(title);
             mCurrentNote.setDescription(description);
             mCurrentNote.setColor(selectedColor);
-            localDataSource.updateNote(mCurrentNote);
+            notesRepository.updateNote(mCurrentNote);
             setEditMode(false);
             requireActivity().invalidateOptionsMenu();
         }
@@ -245,17 +245,12 @@ public class NoteDetailFragment extends Fragment implements NotesLocalDataSource
         selectedColor = colorNote;
     }
 
-    // NotesLocalDataSourceCallback methods
-    @Override
-    public void onNotesRetrieved(List<NoteObj> notesList) {
-        // Does not apply here
-    }
-
-    @Override
     public void onNoteByIdRetrieved(NoteObj note) {
+        if (note == null)
+            return;
+
         binding.titleNoteDetail.setText(note.getTitle());
         binding.descriptionNoteDetail.setText(note.getDescription());
-//        setBackgroundColor(note.getColor());
         mCurrentNote = note;
 
         colorSelected(note.getColor());
