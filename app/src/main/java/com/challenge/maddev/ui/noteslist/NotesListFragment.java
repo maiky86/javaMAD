@@ -81,7 +81,6 @@ public class NotesListFragment extends Fragment implements NotesLocalDataSourceC
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-//        return super.onOptionsItemSelected(item);
         boolean isChecked = item.isChecked();
         item.setChecked(!isChecked);
 
