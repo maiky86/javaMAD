@@ -41,7 +41,7 @@ public class NotesListAdapter extends ListAdapter<NoteObj, NoteViewHolder> {
         holder.bindNote(getItem(position));
         holder.itemView.setOnClickListener(view ->
                 delegate.onNoteSelected(
-                        getItem(position)
+                        getItem(holder.getAdapterPosition())
                 )
         );
     }
@@ -51,7 +51,8 @@ class NoteViewHolder extends RecyclerView.ViewHolder {
 
     private final ItemNoteListBinding binding;
 
-    public NoteViewHolder(@NonNull ItemNoteListBinding binding) {
+    public NoteViewHolder(
+            @NonNull ItemNoteListBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
     }
@@ -66,4 +67,5 @@ class NoteViewHolder extends RecyclerView.ViewHolder {
                 )
         );
     }
+
 }

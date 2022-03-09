@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -24,6 +25,8 @@ import com.challenge.maddev.data.utils.NotesDiffUtil;
 import com.challenge.maddev.databinding.FragmentNotesListBinding;
 import com.challenge.maddev.repositories.NotesRepository;
 import com.challenge.maddev.repositories.NotesRepositoryImpl;
+import com.challenge.maddev.viewmodels.MadDevViewModelFactory;
+import com.challenge.maddev.viewmodels.NotesManagerViewModel;
 
 import java.util.List;
 
@@ -31,7 +34,7 @@ public class NotesListFragment extends Fragment implements NotesListAdapterDeleg
 
     private FragmentNotesListBinding binding;
     private NotesListAdapter adapter;
-    private NotesRepository notesRepository;
+    private NotesManagerViewModel viewModel;
 
     public NotesListFragment() {
         // Required empty public constructor
@@ -45,7 +48,9 @@ public class NotesListFragment extends Fragment implements NotesListAdapterDeleg
 
         binding = FragmentNotesListBinding.inflate(inflater,container, false);
 
-        notesRepository = new NotesRepositoryImpl(getContext());
+        MadDevViewModelFactory factory = new MadDevViewModelFactory(requireContext());
+        viewModel = new ViewModelProvider(requireActivity(), factory)
+                .get(NotesManagerViewModel.class);
 
         setHasOptionsMenu(true);
 
@@ -65,26 +70,32 @@ public class NotesListFragment extends Fragment implements NotesListAdapterDeleg
             );
         });
 
-        requestNotesByFilter(true, null);
-    }
-
-    private void requestNotesByFilter(boolean allNotes, NoteColor filterColor) {
-        if (allNotes) {
-            notesRepository.getAllNotes().observe(
-                    getViewLifecycleOwner(),
-                    this::onNotesRetrieved
-            );
-        }else {
-            notesRepository.getNoteWithColor(filterColor).observe(
-                    getViewLifecycleOwner(),
-                    this::onNotesRetrieved
-            );
-        }
+        viewModel.listOfNotes.observe(getViewLifecycleOwner(), this::onNotesRetrieved);
     }
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu_notes_filter, menu);
+
+        NoteColor filter = viewModel.getFilterNoteColorSelected();
+        if (filter != null) {
+            menu.findItem(getFilterIdFromNoteColor(filter))
+                    .setChecked(true);
+        }
+
+    }
+
+    private int getFilterIdFromNoteColor(NoteColor color) {
+        if (color == NoteColor.BLUE)
+            return R.id.filter_blue;
+        else if (color == NoteColor.RED)
+            return R.id.filter_red;
+        else if (color == NoteColor.GREEN)
+            return R.id.filter_green;
+        else if (color == NoteColor.YELLOW)
+            return R.id.filter_yellow;
+        else // (color == NoteColor.WHITE)
+            return R.id.filter_white;
     }
 
     @Override
@@ -113,10 +124,19 @@ public class NotesListFragment extends Fragment implements NotesListAdapterDeleg
                     filterColor = NoteColor.YELLOW;
                     break;
             }
-            requestNotesByFilter(filterNotes, filterColor);
+            setFilter(filterNotes, filterColor);
         }
 
         return true;
+    }
+
+    private void setFilter(boolean allNotes, NoteColor filterColor) {
+        if (allNotes) {
+            viewModel.doNotFilterNotes();
+        } else {
+            viewModel.filterNotesByColor(filterColor);
+        }
+
     }
 
     public void onNotesRetrieved(List<NoteObj> notesList) {

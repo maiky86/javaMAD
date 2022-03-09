@@ -18,29 +18,28 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.challenge.maddev.R;
-import com.challenge.maddev.data.local.NotesLocalDataSourceImpl;
 import com.challenge.maddev.data.model.NoteObj;
 import com.challenge.maddev.data.utils.NoteColor;
 import com.challenge.maddev.databinding.FragmentNoteDetailBinding;
 import com.challenge.maddev.repositories.NotesRepository;
 import com.challenge.maddev.repositories.NotesRepositoryImpl;
+import com.challenge.maddev.viewmodels.MadDevViewModelFactory;
+import com.challenge.maddev.viewmodels.NotesDetailViewModel;
 
 public class NoteDetailFragment extends Fragment {
 
     private FragmentNoteDetailBinding binding;
-    private NotesRepository notesRepository;
     private NoteColor selectedColor = NoteColor.WHITE;
+    private NotesDetailViewModel viewModel;
 
     private boolean mArgIsAdd = true;
     private int mArgNoteId = -1;
 
     private boolean mIsEditing = false;
-
-    private NoteObj mCurrentNote = null;
 
     public NoteDetailFragment(){}
 
@@ -66,9 +65,11 @@ public class NoteDetailFragment extends Fragment {
                 false
         );
 
-        notesRepository = new NotesRepositoryImpl(getContext());
+        MadDevViewModelFactory factory = new MadDevViewModelFactory(getContext());
+        viewModel = new ViewModelProvider(this,factory)
+                .get(NotesDetailViewModel.class);
 
-        if (mArgIsAdd || mIsEditing) {
+        if (mArgIsAdd || isInEditMode()) {
             binding.colorContainer.setVisibility(View.VISIBLE);
         } else {
             binding.colorContainer.setVisibility(View.GONE);
@@ -87,17 +88,15 @@ public class NoteDetailFragment extends Fragment {
         binding.colorYellow.setOnClickListener(view1 -> colorSelected(NoteColor.YELLOW));
         binding.colorWhite.setOnClickListener(view1 -> colorSelected(NoteColor.WHITE));
 
-        if (mArgNoteId != -1) {
-            notesRepository.getNoteWithId(mArgNoteId).observe(
-                    getViewLifecycleOwner(),
-                    this::onNoteByIdRetrieved
-            );
-        }
+        viewModel.note.observe(getViewLifecycleOwner(), this::onNoteByIdRetrieved);
+        viewModel.getNoteColor().observe(getViewLifecycleOwner(),this::setNoteColor);
+
+        viewModel.setNoteId(mArgNoteId);
     }
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        if (mArgIsAdd || mIsEditing)
+        if (mArgIsAdd || isInEditMode())
             inflater.inflate(R.menu.save_menu, menu);
         else
             inflater.inflate(R.menu.menu_edit_delete, menu);
@@ -126,11 +125,7 @@ public class NoteDetailFragment extends Fragment {
     }
 
     private void deleteNote() {
-
-        if (mCurrentNote != null) {
-            notesRepository.removeNote(mCurrentNote);
-        }
-
+        viewModel.deleteNote();
         Navigation.findNavController(binding.getRoot()).navigateUp();
     }
 
@@ -138,20 +133,17 @@ public class NoteDetailFragment extends Fragment {
         String title = binding.titleNoteDetail.getText().toString();
         String description = binding.descriptionNoteDetail.getText().toString();
 
-        if (mCurrentNote == null) {
-            NoteObj note = new NoteObj(title, description, selectedColor);
-            notesRepository.addNote(note);
+        viewModel.saveNote(title, description);
+
+        if (!isInEditMode()) {
             Navigation.findNavController(binding.getRoot()).navigateUp();
         } else {
-            mCurrentNote.setTitle(title);
-            mCurrentNote.setDescription(description);
-            mCurrentNote.setColor(selectedColor);
-            notesRepository.updateNote(mCurrentNote);
             setEditMode(false);
             requireActivity().invalidateOptionsMenu();
         }
-
     }
+
+    private boolean isInEditMode() { return mIsEditing; }
 
     private void setEditMode(boolean enabled) {
         mIsEditing = enabled;
@@ -191,7 +183,11 @@ public class NoteDetailFragment extends Fragment {
         editText.setCursorVisible(isEnabled);
     }
 
-    private void colorSelected(@NonNull NoteColor colorNote) {
+    private void colorSelected(NoteColor color) {
+        viewModel.setNoteColor(color);
+    }
+
+    private void setNoteColor(@NonNull NoteColor colorNote) {
         setSelectedColorCircle(colorNote);
         setBackgroundColor(colorNote);
     }
@@ -251,8 +247,7 @@ public class NoteDetailFragment extends Fragment {
 
         binding.titleNoteDetail.setText(note.getTitle());
         binding.descriptionNoteDetail.setText(note.getDescription());
-        mCurrentNote = note;
 
-        colorSelected(note.getColor());
+        setNoteColor(note.getColor());
     }
 }

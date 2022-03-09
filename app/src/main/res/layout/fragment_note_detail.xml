@@ -47,7 +47,6 @@
             android:id="@+id/color_white"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:background="@drawable/colored_circle_border"
             android:src="@drawable/colored_circle"
             app:layout_constraintEnd_toStartOf="@+id/color_red"
             app:layout_constraintHorizontal_bias="0.5"
