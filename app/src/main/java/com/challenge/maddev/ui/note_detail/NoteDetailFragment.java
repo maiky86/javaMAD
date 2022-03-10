@@ -15,6 +15,7 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.BindingAdapter;
 import androidx.fragment.app.Fragment;
@@ -35,9 +36,14 @@ public class NoteDetailFragment extends Fragment {
     private boolean mArgIsAdd = true;
     private int mArgNoteId = -1;
 
-    private boolean mIsEditing = false;
-
     public NoteDetailFragment(){}
+
+    private void toogleVisibility(View view, boolean visible) {
+        if (visible)
+            view.setVisibility(View.VISIBLE);
+        else
+            view.setVisibility(View.GONE);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,12 +73,10 @@ public class NoteDetailFragment extends Fragment {
         viewModel = new ViewModelProvider(this,factory)
                 .get(NotesDetailViewModel.class);
 
-        if (mArgIsAdd || isInEditMode()) {
-            binding.colorContainer.setVisibility(View.VISIBLE);
-        } else {
-            binding.colorContainer.setVisibility(View.GONE);
-            setEditMode(false);
-        }
+        // Edit mode is off by default
+        // so if mArgIsAdd we need to turn edit mode on
+        if (mArgIsAdd)
+            viewModel.onEditModeChange();
 
         return binding.getRoot();
     }
@@ -83,6 +87,8 @@ public class NoteDetailFragment extends Fragment {
 
         viewModel.note.observe(getViewLifecycleOwner(), this::onNoteByIdRetrieved);
 
+        viewModel.getEditMode().observe(getViewLifecycleOwner(),this::setEditMode);
+
         viewModel.setNoteId(mArgNoteId);
 
         binding.setNotesDetailVM(viewModel);
@@ -90,7 +96,7 @@ public class NoteDetailFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        if (mArgIsAdd || isInEditMode())
+        if (mArgIsAdd || viewModel.isEditModeOn())
             inflater.inflate(R.menu.save_menu, menu);
         else
             inflater.inflate(R.menu.menu_edit_delete, menu);
@@ -114,8 +120,7 @@ public class NoteDetailFragment extends Fragment {
     }
 
     private void editNote() {
-        setEditMode(true);
-        requireActivity().invalidateOptionsMenu();
+        viewModel.onEditModeChange();
     }
 
     private void deleteNote() {
@@ -127,27 +132,42 @@ public class NoteDetailFragment extends Fragment {
         String title = binding.titleNoteDetail.getText().toString();
         String description = binding.descriptionNoteDetail.getText().toString();
 
-        viewModel.saveNote(title, description);
+        if (!title.trim().isEmpty() && !description.trim().isEmpty()) {
+            viewModel.saveNote(title, description);
 
-        if (!isInEditMode()) {
-            Navigation.findNavController(binding.getRoot()).navigateUp();
+            if (mArgIsAdd) {
+                Navigation.findNavController(binding.getRoot()).navigateUp();
+            } else {
+                viewModel.onEditModeChange();
+            }
         } else {
-            setEditMode(false);
-            requireActivity().invalidateOptionsMenu();
+            noTitleOrDescription();
         }
     }
 
-    private boolean isInEditMode() { return mIsEditing; }
+    private void showEmptyFieldsDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.empty_fields_title)
+                .setMessage(R.string.empty_fields_text)
+                .setPositiveButton(R.string.empty_fields_button, (dialogInterface, i) -> {
+                    dialogInterface.dismiss();
+                })
+                .create();
+
+        dialog.show();
+    }
+
+    private void noTitleOrDescription() {
+        binding.titleNoteDetail.setText("");
+        binding.descriptionNoteDetail.setText("");
+        showEmptyFieldsDialog();
+    }
 
     private void setEditMode(boolean enabled) {
-        mIsEditing = enabled;
 
-        if (enabled) {
-            binding.colorContainer.setVisibility(View.VISIBLE);
-        } else {
-            binding.colorContainer.setVisibility(View.GONE);
+        toogleVisibility(binding.colorContainer, enabled);
+        if (!enabled)
             closeKeyboard();
-        }
 
         enableEditText(
                 binding.titleNoteDetail,
@@ -157,6 +177,8 @@ public class NoteDetailFragment extends Fragment {
                 binding.descriptionNoteDetail,
                 enabled
         );
+
+        requireActivity().invalidateOptionsMenu();
     }
 
     private void closeKeyboard() {

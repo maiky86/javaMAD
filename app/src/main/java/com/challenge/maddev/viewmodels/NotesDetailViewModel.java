@@ -14,7 +14,8 @@ public class NotesDetailViewModel extends ViewModel {
 
     private NotesRepository notesRepository;
 
-//    private NoteObj currentNote;
+    private boolean mIsEditing = false;
+    private MutableLiveData<Boolean> editMode = new MutableLiveData<>(mIsEditing);
 
     private MutableLiveData<Integer> noteId = new MutableLiveData<>(-1);
     public LiveData<NoteObj> note = Transformations.switchMap(noteId, this::getNoteWithId);
@@ -65,12 +66,17 @@ public class NotesDetailViewModel extends ViewModel {
         }
     }
 
-    public LiveData<NoteColor> getNoteColor() {
-        return noteColor;
+    public LiveData<Boolean> getEditMode() { return editMode; }
+
+    public boolean isEditModeOn() {return mIsEditing;}
+
+    public void onEditModeChange() {
+        mIsEditing = !mIsEditing;
+        editMode.postValue(mIsEditing);
     }
 
-    public boolean isSelectedColor(NoteColor color) {
-        return noteColor.getValue() == color;
+    public LiveData<NoteColor> getNoteColor() {
+        return noteColor;
     }
 
     public void setNoteColor(NoteColor color) {

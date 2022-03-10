@@ -13,4 +13,7 @@
     <string name="text_green">Green</string>
     <string name="text_white">White</string>
     <string name="text_all">All</string>
+    <string name="empty_fields_title">Empty fields</string>
+    <string name="empty_fields_text">You need to set a title or a description to save the note</string>
+    <string name="empty_fields_button">Understood</string>
 </resources>
