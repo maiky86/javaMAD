@@ -10,7 +10,13 @@ import com.challenge.maddev.data.model.NoteObj;
 import com.challenge.maddev.data.utils.NoteColor;
 import com.challenge.maddev.repositories.NotesRepository;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
+
+@HiltViewModel
 public class NotesDetailViewModel extends ViewModel {
+
 
     private NotesRepository notesRepository;
 
@@ -24,6 +30,7 @@ public class NotesDetailViewModel extends ViewModel {
 
     public MediatorLiveData<NoteColor> noteColor = new MediatorLiveData<>();
 
+    @Inject
     public NotesDetailViewModel(NotesRepository repository) {
         notesRepository = repository;
 

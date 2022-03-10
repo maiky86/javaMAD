@@ -1,9 +1,5 @@
 package com.challenge.maddev.data.local;
 
-import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
-
 import androidx.lifecycle.LiveData;
 
 import com.challenge.maddev.data.model.NoteObj;
@@ -15,8 +11,8 @@ public class NotesLocalDataSourceImpl implements NotesLocalDataSource {
 
     private NotesDAO notesDAO;
 
-    public NotesLocalDataSourceImpl(Context context) {
-        this.notesDAO = NotesRoomDatabase.getInstance(context).notesDAO();
+    public NotesLocalDataSourceImpl(NotesDAO dao) {
+        this.notesDAO = dao;
     }
 
     @Override

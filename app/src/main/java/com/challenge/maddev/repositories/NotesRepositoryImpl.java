@@ -1,22 +1,22 @@
 package com.challenge.maddev.repositories;
 
-import android.content.Context;
-
 import androidx.lifecycle.LiveData;
 
 import com.challenge.maddev.data.local.NotesLocalDataSource;
-import com.challenge.maddev.data.local.NotesLocalDataSourceImpl;
 import com.challenge.maddev.data.model.NoteObj;
 import com.challenge.maddev.data.utils.NoteColor;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class NotesRepositoryImpl implements NotesRepository {
 
     private NotesLocalDataSource dataSource;
 
-    public NotesRepositoryImpl(Context context) {
-        dataSource = new NotesLocalDataSourceImpl(context);
+    @Inject
+    public NotesRepositoryImpl(NotesLocalDataSource dSource) {
+        dataSource = dSource;
     }
 
     @Override

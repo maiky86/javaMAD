@@ -1,4 +1,4 @@
-package com.challenge.maddev;
+package com.challenge.maddev.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -8,6 +8,11 @@ import androidx.navigation.ui.NavigationUI;
 
 import android.os.Bundle;
 
+import com.challenge.maddev.R;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
 
     private NavController navController;

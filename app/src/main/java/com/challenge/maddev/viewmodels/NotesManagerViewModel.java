@@ -11,6 +11,11 @@ import com.challenge.maddev.repositories.NotesRepository;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
+
+@HiltViewModel
 public class NotesManagerViewModel extends ViewModel {
 
     private NotesRepository notesRepository;
@@ -19,6 +24,7 @@ public class NotesManagerViewModel extends ViewModel {
 
     private MutableLiveData<NoteColor> filterColor = new MutableLiveData<NoteColor>(null);
 
+    @Inject
     public NotesManagerViewModel(NotesRepository repository) {
         notesRepository = repository;
         initLiveData();

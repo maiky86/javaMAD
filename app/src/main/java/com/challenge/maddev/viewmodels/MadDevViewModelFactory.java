@@ -11,21 +11,21 @@ import com.challenge.maddev.repositories.NotesRepositoryImpl;
 
 public class MadDevViewModelFactory implements ViewModelProvider.Factory {
 
-    private final NotesRepository notesRepository;
+//    private final NotesRepository notesRepository;
 
     public MadDevViewModelFactory(Context context) {
-        notesRepository = new NotesRepositoryImpl(context);
+//        notesRepository = new NotesRepositoryImpl(context);
     }
 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(NotesManagerViewModel.class)){
-            return (T) new NotesManagerViewModel(notesRepository);
+//            return (T) new NotesManagerViewModel(notesRepository);
         }
 
         if (modelClass.isAssignableFrom(NotesDetailViewModel.class)) {
-            return (T) new NotesDetailViewModel(notesRepository);
+//            return (T) new NotesDetailViewModel(notesRepository);
         }
 
         throw new UnsupportedOperationException();

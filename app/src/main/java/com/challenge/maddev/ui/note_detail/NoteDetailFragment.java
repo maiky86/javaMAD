@@ -25,9 +25,11 @@ import androidx.navigation.Navigation;
 import com.challenge.maddev.R;
 import com.challenge.maddev.data.model.NoteObj;
 import com.challenge.maddev.databinding.FragmentNoteDetailBinding;
-import com.challenge.maddev.viewmodels.MadDevViewModelFactory;
 import com.challenge.maddev.viewmodels.NotesDetailViewModel;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class NoteDetailFragment extends Fragment {
 
     private FragmentNoteDetailBinding binding;
@@ -38,7 +40,7 @@ public class NoteDetailFragment extends Fragment {
 
     public NoteDetailFragment(){}
 
-    private void toogleVisibility(View view, boolean visible) {
+    private void toggleVisibility(View view, boolean visible) {
         if (visible)
             view.setVisibility(View.VISIBLE);
         else
@@ -69,8 +71,8 @@ public class NoteDetailFragment extends Fragment {
 
         binding.setLifecycleOwner(getViewLifecycleOwner());
 
-        MadDevViewModelFactory factory = new MadDevViewModelFactory(getContext());
-        viewModel = new ViewModelProvider(this,factory)
+//        MadDevViewModelFactory factory = new MadDevViewModelFactory(getContext());
+        viewModel = new ViewModelProvider(this)
                 .get(NotesDetailViewModel.class);
 
         // Edit mode is off by default
@@ -149,9 +151,9 @@ public class NoteDetailFragment extends Fragment {
         AlertDialog dialog = new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.empty_fields_title)
                 .setMessage(R.string.empty_fields_text)
-                .setPositiveButton(R.string.empty_fields_button, (dialogInterface, i) -> {
-                    dialogInterface.dismiss();
-                })
+                .setPositiveButton(R.string.empty_fields_button,
+                        (dialogInterface, i) -> dialogInterface.dismiss()
+                )
                 .create();
 
         dialog.show();
@@ -165,7 +167,7 @@ public class NoteDetailFragment extends Fragment {
 
     private void setEditMode(boolean enabled) {
 
-        toogleVisibility(binding.colorContainer, enabled);
+        toggleVisibility(binding.colorContainer, enabled);
         if (!enabled)
             closeKeyboard();
 

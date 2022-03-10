@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -30,6 +31,9 @@ import com.challenge.maddev.viewmodels.NotesManagerViewModel;
 
 import java.util.List;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class NotesListFragment extends Fragment implements NotesListAdapterDelegate {
 
     private FragmentNotesListBinding binding;
@@ -48,8 +52,8 @@ public class NotesListFragment extends Fragment implements NotesListAdapterDeleg
 
         binding = FragmentNotesListBinding.inflate(inflater,container, false);
 
-        MadDevViewModelFactory factory = new MadDevViewModelFactory(requireContext());
-        viewModel = new ViewModelProvider(requireActivity(), factory)
+//        MadDevViewModelFactory factory = new MadDevViewModelFactory(requireContext());
+        viewModel = new ViewModelProvider(requireActivity())
                 .get(NotesManagerViewModel.class);
 
         setHasOptionsMenu(true);
@@ -158,6 +162,6 @@ public class NotesListFragment extends Fragment implements NotesListAdapterDeleg
         NotesListFragmentDirections.ActionNotesListToNoteDetail action =
                 NotesListFragmentDirections.actionNotesListToNoteDetail();
         action.setNoteId(note.getId());
-        NavHostFragment.findNavController(this).navigate(action);
+        NavHostFragment.findNavController(this).navigate((NavDirections) action);
     }
 }
