@@ -1,100 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/note_detail_container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <EditText
-        android:id="@+id/title_note_detail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        android:hint="@string/title_text"
-        android:imeOptions="actionNext"
-        android:inputType="text"
-        android:lines="1"
-        android:padding="16dp"
-        android:textSize="22sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/description_note_detail"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@null"
-        android:hint="@string/description_text"
-        android:imeOptions="actionDone"
-        android:gravity="start|top"
-        android:inputType="textMultiLine"
-        android:textSize="18sp"
-        android:padding="16dp"
-        app:layout_constraintBottom_toTopOf="@id/color_container"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title_note_detail" />
+    <data>
+        <import type="com.challenge.maddev.data.utils.NoteColor"/>
+        <import type="androidx.databinding.adapters.Converters"/>
+        <import type="com.challenge.maddev.R"/>
+        <variable
+            name="notesDetailVM"
+            type="com.challenge.maddev.viewmodels.NotesDetailViewModel" />
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/color_container"
+        android:id="@+id/note_detail_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/grey"
-        android:padding="8dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:layout_height="match_parent"
+        dynamicBackground="@{notesDetailVM.noteColor.colorId}"
+        >
 
-        <ImageView
-            android:id="@+id/color_white"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/colored_circle"
-            app:layout_constraintEnd_toStartOf="@+id/color_red"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
+        <EditText
+            android:id="@+id/title_note_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:hint="@string/title_text"
+            android:imeOptions="actionNext"
+            android:inputType="text"
+            android:lines="1"
+            android:padding="16dp"
+            android:textSize="22sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/white" />
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/color_red"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/colored_circle"
-            app:layout_constraintEnd_toStartOf="@+id/color_yellow"
-            app:layout_constraintStart_toEndOf="@+id/color_white"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/red" />
+        <EditText
+            android:id="@+id/description_note_detail"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@null"
+            android:hint="@string/description_text"
+            android:imeOptions="actionDone"
+            android:gravity="start|top"
+            android:inputType="textMultiLine"
+            android:textSize="18sp"
+            android:padding="16dp"
+            app:layout_constraintBottom_toTopOf="@id/color_container"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title_note_detail" />
 
-        <ImageView
-            android:id="@+id/color_green"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/colored_circle"
-            app:layout_constraintEnd_toStartOf="@+id/color_blue"
-            app:layout_constraintStart_toEndOf="@+id/color_yellow"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/green" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/color_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/grey"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-        <ImageView
-            android:id="@+id/color_yellow"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/colored_circle"
-            app:layout_constraintEnd_toStartOf="@+id/color_green"
-            app:layout_constraintStart_toEndOf="@+id/color_red"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/yellow" />
+            <ImageView
+                android:id="@+id/color_white"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/colored_circle"
+                app:layout_constraintEnd_toStartOf="@+id/color_red"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:onClick="@{() -> notesDetailVM.setNoteColor(NoteColor.WHITE)}"
+                dynamicBackground="@{notesDetailVM.noteColor == NoteColor.WHITE ? R.drawable.colored_circle_border : android.R.color.transparent}"
+                app:tint="@color/white" />
 
-        <ImageView
-            android:id="@+id/color_blue"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/colored_circle"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/color_green"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/blue" />
+            <ImageView
+                android:id="@+id/color_red"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/colored_circle"
+                app:layout_constraintEnd_toStartOf="@+id/color_yellow"
+                app:layout_constraintStart_toEndOf="@+id/color_white"
+                app:layout_constraintTop_toTopOf="parent"
+                android:onClick="@{() -> notesDetailVM.setNoteColor(NoteColor.RED)}"
+                dynamicBackground="@{notesDetailVM.noteColor == NoteColor.RED ? R.drawable.colored_circle_border : android.R.color.transparent}"
+                app:tint="@color/red" />
+
+            <ImageView
+                android:id="@+id/color_green"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/colored_circle"
+                android:onClick="@{() -> notesDetailVM.setNoteColor(NoteColor.GREEN)}"
+                dynamicBackground="@{notesDetailVM.noteColor == NoteColor.GREEN ? R.drawable.colored_circle_border : android.R.color.transparent}"
+                app:layout_constraintEnd_toStartOf="@+id/color_blue"
+                app:layout_constraintStart_toEndOf="@+id/color_yellow"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/green" />
+
+            <ImageView
+                android:id="@+id/color_yellow"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/colored_circle"
+                android:onClick="@{() -> notesDetailVM.setNoteColor(NoteColor.YELLOW)}"
+                dynamicBackground="@{notesDetailVM.noteColor == NoteColor.YELLOW ? R.drawable.colored_circle_border : android.R.color.transparent}"
+                app:layout_constraintEnd_toStartOf="@+id/color_green"
+                app:layout_constraintStart_toEndOf="@+id/color_red"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/yellow" />
+
+            <ImageView
+                android:id="@+id/color_blue"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/colored_circle"
+                android:onClick="@{() -> notesDetailVM.setNoteColor(NoteColor.BLUE)}"
+                dynamicBackground="@{notesDetailVM.noteColor == NoteColor.BLUE ? R.drawable.colored_circle_border : android.R.color.transparent}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/color_green"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/blue" />
 
 
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

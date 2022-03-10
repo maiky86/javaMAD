@@ -69,6 +69,10 @@ public class NotesDetailViewModel extends ViewModel {
         return noteColor;
     }
 
+    public boolean isSelectedColor(NoteColor color) {
+        return noteColor.getValue() == color;
+    }
+
     public void setNoteColor(NoteColor color) {
         selectedNoteColor.postValue(color);
     }

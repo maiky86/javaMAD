@@ -2,7 +2,6 @@ package com.challenge.maddev.ui.note_detail;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
 
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,23 +16,20 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.databinding.BindingAdapter;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.challenge.maddev.R;
 import com.challenge.maddev.data.model.NoteObj;
-import com.challenge.maddev.data.utils.NoteColor;
 import com.challenge.maddev.databinding.FragmentNoteDetailBinding;
-import com.challenge.maddev.repositories.NotesRepository;
-import com.challenge.maddev.repositories.NotesRepositoryImpl;
 import com.challenge.maddev.viewmodels.MadDevViewModelFactory;
 import com.challenge.maddev.viewmodels.NotesDetailViewModel;
 
 public class NoteDetailFragment extends Fragment {
 
     private FragmentNoteDetailBinding binding;
-    private NoteColor selectedColor = NoteColor.WHITE;
     private NotesDetailViewModel viewModel;
 
     private boolean mArgIsAdd = true;
@@ -65,6 +61,8 @@ public class NoteDetailFragment extends Fragment {
                 false
         );
 
+        binding.setLifecycleOwner(getViewLifecycleOwner());
+
         MadDevViewModelFactory factory = new MadDevViewModelFactory(getContext());
         viewModel = new ViewModelProvider(this,factory)
                 .get(NotesDetailViewModel.class);
@@ -82,16 +80,12 @@ public class NoteDetailFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        binding.colorGreen.setOnClickListener(view1 -> colorSelected(NoteColor.GREEN));
-        binding.colorRed.setOnClickListener(view1 -> colorSelected(NoteColor.RED));
-        binding.colorBlue.setOnClickListener(view1 -> colorSelected(NoteColor.BLUE));
-        binding.colorYellow.setOnClickListener(view1 -> colorSelected(NoteColor.YELLOW));
-        binding.colorWhite.setOnClickListener(view1 -> colorSelected(NoteColor.WHITE));
 
         viewModel.note.observe(getViewLifecycleOwner(), this::onNoteByIdRetrieved);
-        viewModel.getNoteColor().observe(getViewLifecycleOwner(),this::setNoteColor);
 
         viewModel.setNoteId(mArgNoteId);
+
+        binding.setNotesDetailVM(viewModel);
     }
 
     @Override
@@ -150,7 +144,6 @@ public class NoteDetailFragment extends Fragment {
 
         if (enabled) {
             binding.colorContainer.setVisibility(View.VISIBLE);
-            setSelectedColorCircle(selectedColor);
         } else {
             binding.colorContainer.setVisibility(View.GONE);
             closeKeyboard();
@@ -183,62 +176,10 @@ public class NoteDetailFragment extends Fragment {
         editText.setCursorVisible(isEnabled);
     }
 
-    private void colorSelected(NoteColor color) {
-        viewModel.setNoteColor(color);
-    }
-
-    private void setNoteColor(@NonNull NoteColor colorNote) {
-        setSelectedColorCircle(colorNote);
-        setBackgroundColor(colorNote);
-    }
-
-    private void setSelectedColorCircle(NoteColor colorNote) {
-        Drawable border = ContextCompat.getDrawable(requireContext(),R.drawable.colored_circle_border);
-        clearSelectedColor(selectedColor);
-
-        switch (colorNote) {
-            case RED:
-                binding.colorRed.setBackground(border);
-                break;
-            case BLUE:
-                binding.colorBlue.setBackground(border);
-                break;
-            case GREEN:
-                binding.colorGreen.setBackground(border);
-                break;
-            case YELLOW:
-                binding.colorYellow.setBackground(border);
-                break;
-            default:
-                binding.colorWhite.setBackground(border);
-                break;
-        }
-    }
-
-    private void clearSelectedColor(NoteColor colorNote){
-        switch (colorNote) {
-            case RED:
-                binding.colorRed.setBackgroundColor(Color.TRANSPARENT);
-                break;
-            case BLUE:
-                binding.colorBlue.setBackgroundColor(Color.TRANSPARENT);
-                break;
-            case GREEN:
-                binding.colorGreen.setBackgroundColor(Color.TRANSPARENT);
-                break;
-            case YELLOW:
-                binding.colorYellow.setBackgroundColor(Color.TRANSPARENT);
-                break;
-            default:
-                binding.colorWhite.setBackgroundColor(Color.TRANSPARENT);
-                break;
-        }
-    }
-
-    private void setBackgroundColor(NoteColor colorNote) {
-        int color = ContextCompat.getColor(requireContext(), colorNote.getColorId());
-        binding.noteDetailContainer.setBackgroundColor(color);
-        selectedColor = colorNote;
+    @BindingAdapter("dynamicBackground")
+    public static void setBackground(View view, int resource) {
+        Drawable background = ContextCompat.getDrawable(view.getContext(),resource);
+        view.setBackground(background);
     }
 
     public void onNoteByIdRetrieved(NoteObj note) {
@@ -247,7 +188,5 @@ public class NoteDetailFragment extends Fragment {
 
         binding.titleNoteDetail.setText(note.getTitle());
         binding.descriptionNoteDetail.setText(note.getDescription());
-
-        setNoteColor(note.getColor());
     }
 }
