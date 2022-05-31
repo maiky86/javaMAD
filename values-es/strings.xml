@@ -14,5 +14,6 @@
   <string name="text_green">Verde</string>
   <string name="text_white">Blanco</string>
   <string name="text_all">Todos</string>
-  <string name="new_string"></string>
+  <string name="new_string">Nuevo texto para ser visto</string>
+  <string name="second_key">Mira siempre el lado bueno de la vida</string>
 </resources>
