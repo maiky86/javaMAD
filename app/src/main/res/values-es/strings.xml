@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+  <string name="app_name">MadDev</string>
+  <string name="blank_label"></string>
+  <string name="notes_list_title">Mis notas</string>
+  <string name="title_text">Título</string>
+  <string name="description_text">Descripción</string>
+  <string name="menu_save">Ahorrar</string>
+  <string name="menu_delete">Borrar</string>
+  <string name="menu_edit">Editar</string>
+  <string name="text_blue">Azul</string>
+  <string name="text_red">Rojo</string>
+  <string name="text_yellow">Amarillo</string>
+  <string name="text_green">Verde</string>
+  <string name="text_white">Blanco</string>
+  <string name="text_all">Todos</string>
+  <string name="new_string">Nuevo texto para ser visto</string>
+  <string name="second_key">Mira siempre el lado bueno de la vida</string>
+</resources>
